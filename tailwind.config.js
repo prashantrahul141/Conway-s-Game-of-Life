@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['*.html'],
+  safelist: ['cell'],
   theme: {
     extend: {
       gridTemplateColumns: {

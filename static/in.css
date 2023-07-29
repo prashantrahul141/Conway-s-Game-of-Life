@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .cell {
+    @apply outline outline-1 outline-black dark:outline-white;
+  }
+}

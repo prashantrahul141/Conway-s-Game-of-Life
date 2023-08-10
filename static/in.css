@@ -4,6 +4,10 @@
 
 @layer components {
   .cell {
-    @apply outline outline-1 outline-black dark:outline-white;
+    @apply outline outline-1 outline-white;
+  }
+
+  .active-cell {
+    @apply bg-white;
   }
 }

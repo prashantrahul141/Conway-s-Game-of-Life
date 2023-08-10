@@ -5,12 +5,24 @@ let COLUMNS = Math.floor(window.innerWidth / CELL_DIMENSION);
 let ROWS = Math.floor(window.innerHeight / CELL_DIMENSION);
 // parent wrapper element.
 const wrapper = document.getElementById('wrapper');
-const handleClick = (index) => { };
+const handleClick = (event, index) => {
+    const thisCell = event.target;
+    const cellState = thisCell.getAttribute('data-state') || 'false';
+    if (cellState === 'false') {
+        thisCell.setAttribute('data-state', 'true');
+        thisCell.classList.add('active-cell');
+    }
+    else {
+        thisCell.setAttribute('data-state', 'false');
+        thisCell.classList.remove('active-cell');
+    }
+};
 // creates indiviual cell.
 const createCell = (index) => {
     const cell = document.createElement('div');
+    cell.setAttribute('data-state', 'false');
     cell.classList.add('cell');
-    cell.onclick = () => handleClick(index);
+    cell.onclick = (event) => handleClick(event, index);
     return cell;
 };
 // creates all cell with given quantity.

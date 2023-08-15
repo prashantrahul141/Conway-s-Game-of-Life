@@ -6,13 +6,14 @@ let ROWS = Math.floor(window.innerHeight / CELL_DIMENSION);
 let PLAYING = false;
 let CACHED_DATA_STATE: Array<Array<number>> = [];
 
-const prepopulate_cache = () => {
-  CACHED_DATA_STATE = [];
-  for (let i = 0; i < ROWS; i++) {
-    CACHED_DATA_STATE.push(new Array(COLUMNS));
-  }
+// make 2d array
+const make2DArray = (y: number, x: number) => {
+  const _array: Array<Array<number>> = [];
 
-  cacheCells();
+  for (let i = 0; i < y; i++) {
+    _array.push(new Array(x).fill(0));
+  }
+  return _array;
 };
 
 // parent wrapper element.
@@ -40,20 +41,6 @@ const handleClickPerCell = (event: MouseEvent, index: number) => {
     CACHED_DATA_STATE[(cellIndex - (cellIndex % COLUMNS)) / COLUMNS][
       cellIndex % COLUMNS
     ] = 0;
-  }
-};
-
-// cache all cells state.
-const cacheCells = () => {
-  const allCells = Array.from(wrapper.childNodes);
-
-  for (let i = 0; i < ROWS; i++) {
-    for (let j = 0; j < COLUMNS; j++) {
-      const _currentCell = allCells[i * j] as HTMLDivElement;
-
-      CACHED_DATA_STATE[i][j] =
-        _currentCell.getAttribute('data-state') === 'false' ? 0 : 1;
-    }
   }
 };
 
@@ -97,7 +84,7 @@ const createAllCells = (quantity: number) => {
   wrapper.style.setProperty('--columns', COLUMNS.toString());
   wrapper.style.setProperty('--rows', ROWS.toString());
   setPlaying(false);
-  prepopulate_cache();
+  CACHED_DATA_STATE = make2DArray(ROWS, COLUMNS);
 };
 
 // create initial cells.
@@ -122,10 +109,61 @@ window.onresize = createGrid;
 // move forward the simulation.
 const nextStep = () => {
   console.info('Moving next step.');
+  const nextGeneration = make2DArray(ROWS, COLUMNS);
+
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLUMNS; x++) {
+      const cellState = CACHED_DATA_STATE[y][x];
+      let numberOfMembersActive = 0;
+
+      // count sum.
+      // by looping around the original cell.
+      for (let i = y - 1; i < y + 2; i++) {
+        for (let j = x - 1; j < x + 2; j++) {
+          // if less than 0th row.
+          switch (i) {
+            case -1:
+              i = y;
+              break;
+
+            case ROWS + 1:
+              i = 0;
+              break;
+
+            default:
+              i = i;
+          }
+
+          switch (j) {
+            case -1:
+              j = x;
+              break;
+
+            case COLUMNS + 1:
+              j = 0;
+              break;
+
+            default:
+              j = j;
+          }
+
+          // ignore if its original cell itself.
+          if (!(i == y && j == x)) {
+            console.log(i, j);
+          }
+        }
+      }
+      throw 'sd';
+    }
+  }
+
   if (PLAYING) {
     setTimeout(nextStep, 0.5);
   }
+
+  // renders.
 };
+
 // handleCell for play button.
 const handleClickPlayButton = (event: MouseEvent) => {
   setPlaying(!PLAYING);

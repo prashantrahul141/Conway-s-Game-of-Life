@@ -4,12 +4,12 @@ let COLUMNS = Math.floor(window.innerWidth / CELL_DIMENSION);
 let ROWS = Math.floor(window.innerHeight / CELL_DIMENSION);
 let PLAYING = false;
 let CACHED_DATA_STATE = [];
-const prepopulate_cache = () => {
-    CACHED_DATA_STATE = [];
-    for (let i = 0; i < ROWS; i++) {
-        CACHED_DATA_STATE.push(new Array(COLUMNS));
+const make2DArray = (y, x) => {
+    const _array = [];
+    for (let i = 0; i < y; i++) {
+        _array.push(new Array(x).fill(0));
     }
-    cacheCells();
+    return _array;
 };
 const wrapper = document.getElementById('wrapper');
 wrapper.innerText = '';
@@ -27,16 +27,6 @@ const handleClickPerCell = (event, index) => {
         thisCell.setAttribute('data-state', 'false');
         thisCell.classList.remove('active-cell');
         CACHED_DATA_STATE[(cellIndex - (cellIndex % COLUMNS)) / COLUMNS][cellIndex % COLUMNS] = 0;
-    }
-};
-const cacheCells = () => {
-    const allCells = Array.from(wrapper.childNodes);
-    for (let i = 0; i < ROWS; i++) {
-        for (let j = 0; j < COLUMNS; j++) {
-            const _currentCell = allCells[i * j];
-            CACHED_DATA_STATE[i][j] =
-                _currentCell.getAttribute('data-state') === 'false' ? 0 : 1;
-        }
     }
 };
 const createCell = (index) => {
@@ -68,7 +58,7 @@ const createAllCells = (quantity) => {
     wrapper.style.setProperty('--columns', COLUMNS.toString());
     wrapper.style.setProperty('--rows', ROWS.toString());
     setPlaying(false);
-    prepopulate_cache();
+    CACHED_DATA_STATE = make2DArray(ROWS, COLUMNS);
 };
 createAllCells(COLUMNS * ROWS);
 const createGrid = () => {
@@ -82,6 +72,41 @@ const createGrid = () => {
 window.onresize = createGrid;
 const nextStep = () => {
     console.info('Moving next step.');
+    const nextGeneration = make2DArray(ROWS, COLUMNS);
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLUMNS; x++) {
+            const cellState = CACHED_DATA_STATE[y][x];
+            let numberOfMembersActive = 0;
+            for (let i = y - 1; i < y + 2; i++) {
+                for (let j = x - 1; j < x + 2; j++) {
+                    switch (i) {
+                        case -1:
+                            i = y;
+                            break;
+                        case ROWS + 1:
+                            i = 0;
+                            break;
+                        default:
+                            i = i;
+                    }
+                    switch (j) {
+                        case -1:
+                            j = x;
+                            break;
+                        case COLUMNS + 1:
+                            j = 0;
+                            break;
+                        default:
+                            j = j;
+                    }
+                    if (!(i == y && j == x)) {
+                        console.log(i, j);
+                    }
+                }
+            }
+            throw 'sd';
+        }
+    }
     if (PLAYING) {
         setTimeout(nextStep, 0.5);
     }

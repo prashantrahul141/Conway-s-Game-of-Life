@@ -120,48 +120,94 @@ const nextStep = () => {
       // by looping around the original cell.
       for (let i = y - 1; i < y + 2; i++) {
         for (let j = x - 1; j < x + 2; j++) {
-          // if less than 0th row.
+          // ignoring end cells vertically.
+          let temp_i, temp_j;
           switch (i) {
             case -1:
-              i = y;
+              temp_i = ROWS - 1;
               break;
 
-            case ROWS + 1:
-              i = 0;
+            case ROWS:
+              temp_i = 0;
               break;
 
             default:
-              i = i;
+              temp_i = i;
           }
 
+          // ignoring end cells horizontally.
           switch (j) {
             case -1:
-              j = x;
+              temp_j = COLUMNS - 1;
               break;
 
-            case COLUMNS + 1:
-              j = 0;
+            case COLUMNS:
+              temp_j = 0;
               break;
 
             default:
-              j = j;
+              temp_j = j;
           }
 
-          // ignore if its original cell itself.
-          if (!(i == y && j == x)) {
-            console.log(i, j);
+          // // ignore if its original cell itself.
+          if (!(temp_i == y && temp_j == x)) {
+            numberOfMembersActive += CACHED_DATA_STATE[temp_i][temp_j];
           }
         }
       }
-      throw 'sd';
+      // checking for current state of the current cell
+      if (cellState) {
+        // if cell is active.
+        // Rule 1.
+        // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+        if (numberOfMembersActive < 2) {
+          nextGeneration[y][x] = 0;
+        }
+
+        // Rule 2.
+        // Any live cell with two or three live neighbours lives on to the next generation.
+        else if (numberOfMembersActive === 3 || numberOfMembersActive === 2) {
+          nextGeneration[y][x] = 1;
+        }
+
+        // Rule 3.
+        // Any live cell with more than three live neighbours dies, as if by overpopulation.
+        else if (numberOfMembersActive > 3) {
+          nextGeneration[y][x] = 0;
+        }
+      } else {
+        // if cell is not active.
+        // Rule 4.
+        // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+        if (numberOfMembersActive === 3) {
+          nextGeneration[y][x] = 1;
+        }
+      }
+    }
+  }
+
+  // updating cache data.
+  CACHED_DATA_STATE = nextGeneration;
+
+  // renders.
+  const cellElements = wrapper.childNodes;
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLUMNS; x++) {
+      const indexOfCell = y * COLUMNS + x;
+      const currentCellElement = cellElements[indexOfCell] as HTMLDivElement;
+      if (CACHED_DATA_STATE[y][x]) {
+        currentCellElement.classList.add('active-cell');
+        currentCellElement.setAttribute('data-state', 'true');
+      } else {
+        currentCellElement.classList.remove('active-cell');
+        currentCellElement.setAttribute('data-state', 'false');
+      }
     }
   }
 
   if (PLAYING) {
-    setTimeout(nextStep, 0.5);
+    setTimeout(nextStep, 100);
   }
-
-  // renders.
 };
 
 // handleCell for play button.

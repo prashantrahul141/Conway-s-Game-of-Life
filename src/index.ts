@@ -22,6 +22,9 @@ wrapper.innerText = '';
 
 // play button element.
 const play_button = document.getElementById('play-button') as HTMLButtonElement;
+const inverse_button = document.getElementById(
+  'inverse-button'
+) as HTMLButtonElement;
 
 // handleclick for cells.
 const handleClickPerCell = (event: MouseEvent, index: number) => {
@@ -216,4 +219,25 @@ const handleClickPlayButton = (event: MouseEvent) => {
   // changing playing state variable.
 };
 
+// inverse button handler
+const handleInverseButton = () => {
+  console.info('Inversing all cells.');
+
+  const childCells = wrapper.childNodes;
+  CACHED_DATA_STATE = CACHED_DATA_STATE.map((cellArray, i) => {
+    return cellArray.map((cell, j) => {
+      const cellElement = childCells[i * COLUMNS + j] as HTMLDivElement;
+      if (cell) {
+        cellElement.classList.remove('active-cell');
+        cellElement.setAttribute('data-status', 'false');
+      } else {
+        cellElement.classList.add('active-cell');
+        cellElement.setAttribute('data-status', 'true');
+      }
+      return Number(!cell);
+    });
+  });
+};
+
+inverse_button.onclick = handleInverseButton;
 play_button.onclick = handleClickPlayButton;

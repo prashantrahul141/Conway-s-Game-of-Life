@@ -8,6 +8,6 @@
   }
 
   .active-cell {
-    @apply bg-white;
+    @apply bg-white outline outline-1 outline-black;
   }
 }
